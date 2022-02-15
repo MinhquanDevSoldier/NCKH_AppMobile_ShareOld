@@ -1,8 +1,17 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import {Image,View,Text,StyleSheet,Dimensions } from 'react-native'
+import {onValue,ref,set} from 'firebase/database';
+import {db,auth} from '../firebase/config'
 const {width,height} = Dimensions.get('window');
 
 const ChatListItem = (props) => {
+    const [userPost,setUserPost] = useState({});
+    //useEffect
+    useEffect(()=>{
+        onValue(ref(db,'users/'+props.uid),(snapshot)=>{
+            snapshot.val() == null ? setUserPost([]) : setUserPost(snapshot.val());
+        })
+    },[])
     return(
         <View>
             <View
@@ -11,14 +20,14 @@ const ChatListItem = (props) => {
                 <Image
                     style={{
                         width:width/6,
-                        height:height/14,
+                        height:width/6,
                         borderRadius:width
                     }}
-                    resizeMode="contain"
-                    source={{uri:'https://thispersondoesnotexist.com/image'}}
+                    resizeMode="cover"
+                    source={{uri:userPost.Avatar}}
                 />
                 <View
-                    style={{paddingStart:5}}
+                    style={{paddingStart:15}}
                 >
                     <Text style={{color: 'black',fontWeight:'800'}}>{props.name}</Text>
                     <Text>{props.lastMessage}</Text>
