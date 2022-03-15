@@ -24,7 +24,7 @@ const ChatListItem = (props) => {
                         borderRadius:width
                     }}
                     resizeMode="cover"
-                    source={{uri:userPost.Avatar}}
+                    source={{uri:userPost.photo}}
                 />
                 <View
                     style={{paddingStart:15}}

@@ -10,6 +10,8 @@ import {
     Linking,
     Platform,
 } from 'react-native'
+import MapView from 'react-native-maps';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import NormalAlert from '../../components/modals/NormalAlert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {onValue,ref,set} from 'firebase/database';
@@ -20,6 +22,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 const {width, height} = Dimensions.get('window');
 const PostDetail = ({navigation,route})=>{
     //value
+    const notes = 'Lưu ý:\nKhông nên chuyển khoản hay thanh toán trước khi chưa nhận được vật phẩm, tránh các trường hợp lừa đảo qua mạng.';
     const uid = auth.currentUser == null ? '' : auth.currentUser.uid;
     const [message,setMessage] = useState('');
     //Boolean 
@@ -66,9 +69,8 @@ const PostDetail = ({navigation,route})=>{
     //Main
     return(
         <SafeAreaView>
-            <ScrollView>
                 <View
-                    style={{paddingHorizontal:10}}
+                    style={styles().container}
                 >
                     <View
                         style={{
@@ -151,9 +153,12 @@ const PostDetail = ({navigation,route})=>{
                             </TouchableOpacity> 
                         </View>
                     </View>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                >
                     <Image
                         resizeMode='cover'
-                        style={{width:width-20,height:200,borderRadius:5}}
+                        style={{width:width-20,height:width-20,borderRadius:5}}
                         source={{uri:postDetail.DescriptionPhoto}}
                     />
                     <View style={styles().contentBox}>
@@ -174,7 +179,7 @@ const PostDetail = ({navigation,route})=>{
                                 width:40,
                                 height:40,
                             }}
-                            source={{uri:userPost.Avatar}}
+                            source={{uri:userPost.photo}}
                         />
                         <Text
                             style={{
@@ -184,7 +189,7 @@ const PostDetail = ({navigation,route})=>{
                                 elevation:2,
                                 
                             }}
-                        >{userPost == null ? '' : userPost.username}</Text>
+                        >{userPost == null ? '' : userPost.name}</Text>
                     </View>
                     <Text
                         style={{
@@ -200,12 +205,41 @@ const PostDetail = ({navigation,route})=>{
                             {postDetail.Content == null ? '':postDetail.Content.toString()}
                         </Text>
                     </View>
+                    <View style={[styles().contentBox,styles().contentBox3]}>
+                        <Icon
+                            name='map-marker-alt' 
+                            style={{
+                                paddingRight:10,
+                                textAlign: 'center',
+                                fontSize: 20,
+                                color: '#154360'
+                            }}    
+                        />
+                        <Text style={[styles().textContent,styles().textLocation]} >
+                            {postDetail.Location == null ? '':postDetail.Location.toString()}
+                        </Text>
+                    </View>
+                    <View style={[styles().contentBox,styles().contentBox2]}>
+                        <Icon
+                            name='exclamation-triangle' 
+                            style={{
+                                paddingRight:10,
+                                textAlign: 'center',
+                                fontSize: 20,
+                                color: '#154360'
+                            }}    
+                        />
+                        <Text style={styles().textContent} >
+                            {notes}
+                        </Text>
+                    </View>
+                </ScrollView>
                     <View style={styles().bottomView} >
                         <TouchableOpacity
                             onPress={()=>{
                                 if (uid == '')
                                 {
-                                    if(userPost.Phone == "")
+                                    if(userPost.phone == "")
                                     {
                                         setMessage('Người dùng này chưa cập nhật số điện thoại')
                                         setModalVisible(!modalVisible)
@@ -216,13 +250,13 @@ const PostDetail = ({navigation,route})=>{
                                     setMessage('Đây là bài đăng của bạn')
                                     setModalVisible(!modalVisible)
                                 }
-                                else if(userPost.Phone == "")
+                                else if(userPost.phone == "")
                                 {
                                     setMessage('Người dùng này chưa cập nhật số điện thoại')
                                     setModalVisible(!modalVisible)
                                 }
                                 else {
-                                    dialCall(userPost.Phone)
+                                    dialCall(userPost.phone)
                                 }
                             }}
                             style={[styles().button,styles().buttonPhone]}
@@ -262,7 +296,7 @@ const PostDetail = ({navigation,route})=>{
                                     
                                     navigation.navigate('ChatScreen',{
                                         idRoom:idroom,
-                                        name:userPost.username,
+                                        name:userPost.name,
                                         uid2:UserPostID
                                     })
                                 }
@@ -282,7 +316,17 @@ const PostDetail = ({navigation,route})=>{
                         </TouchableOpacity>             
                     </View>
                 </View>
-            </ScrollView>
+                {/* //Cần cấp quyền */}
+                    {/* <MapView
+                    style={{width:width-20,height:width}}
+                    initialRegion={{
+                    latitude: 37.78825,
+                    longitude: -122.4324,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                    }}
+                /> */}
+            
             <NormalAlert
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}

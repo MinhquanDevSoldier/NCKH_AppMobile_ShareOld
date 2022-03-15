@@ -37,10 +37,10 @@ const ModifyProfile = ({navigation})=>{
     useEffect(()=>{
         onValue(ref(db,'users/'+uid),(snapshot)=>{
             SetUserInfo(snapshot.val());
-            onChangeAddress(snapshot.val().Address);
-            onChangeInputName(snapshot.val().username);
-            onChangePhone(snapshot.val().Phone);
-            setAvatar(snapshot.val().Avatar);
+            onChangeAddress(snapshot.val().address);
+            onChangeInputName(snapshot.val().name);
+            onChangePhone(snapshot.val().phone);
+            setAvatar(snapshot.val().photo);
         })
     },[])
 
@@ -59,11 +59,11 @@ const ModifyProfile = ({navigation})=>{
                 var min = new Date().getMinutes(); //Current Minutes
                 var sec = new Date().getSeconds();
                 set(ref(db, 'users/' + userCredential.user.uid), {
-                    username: inputName,
+                    name: inputName,
                     email: email,
-                    Address: inputAddress,
-                    Phone: inputPhone,
-                    CreateAt: `${date}/${month}/${year}`
+                    address: inputAddress,
+                    phone: inputPhone,
+                    // CreateAt: `${date}/${month}/${year}`
                   });
               }).catch((error) => {
                 console.log(error.message);
@@ -74,10 +74,10 @@ const ModifyProfile = ({navigation})=>{
 
     const updateInfo = (name,address,phone,avatar)=>{
         const updates = {};
-        updates['/users/'+uid+'/username'] = name;
-        updates['/users/'+uid+'/Address'] = address;
-        updates['/users/'+uid+'/Phone'] = phone;
-        updates['/users/'+uid+'/Avatar'] = avatar;
+        updates['/users/'+uid+'/name'] = name;
+        updates['/users/'+uid+'/address'] = address;
+        updates['/users/'+uid+'/phone'] = phone;
+        updates['/users/'+uid+'/photo'] = avatar;
         return update(ref(db),updates);
     }
     const VerifyInfoAccount = (name,address,phone,avatar)=>{

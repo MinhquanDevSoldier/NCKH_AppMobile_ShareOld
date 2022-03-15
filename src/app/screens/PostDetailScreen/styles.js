@@ -1,7 +1,11 @@
 import React from 'react'
-import {StyleSheet} from 'react-native'
+import {StyleSheet,Dimensions} from 'react-native'
+const {width,height} = Dimensions.get('screen')
 
 export default (sizeContent)=> StyleSheet.create({
+    container: {
+        paddingHorizontal:10
+    },
     contentBox:{
         backgroundColor:'white',
         marginVertical:4,
@@ -10,9 +14,24 @@ export default (sizeContent)=> StyleSheet.create({
         paddingHorizontal:10,
         paddingBottom:sizeContent < 100 ? 50 : 10,
         paddingTop:10,
+        //position:'relative',
+    },
+    contentBox3:{
+        flexDirection:'row',
+        backgroundColor:'rgba(255,255,255,0)',
+        elevation:0, 
+    },
+    contentBox2:{
+        flexDirection:'row',
+        backgroundColor:'rgba(255,255,255,0)',
+        elevation:0, 
+        borderTopWidth:1.5,
+        paddingBottom:250,
     },
     optionTopBar:{
         flexDirection:'row',
+        position:'relative',
+        top:0,
         //width:'100%',
     },
     textTitle: {
@@ -25,9 +44,17 @@ export default (sizeContent)=> StyleSheet.create({
         fontWeight:'300',
         fontSize:16,
     },
+    textLocation:{
+        width:width-50
+    },
     bottomView:{
+        backgroundColor:'rgba(255,255,255,1)',
         flex:1,
         flexDirection:'row',
+        position:'absolute',
+        bottom:100,
+        left:10,
+        borderRadius:5
     },
     topIcon:{
         borderRadius:5,

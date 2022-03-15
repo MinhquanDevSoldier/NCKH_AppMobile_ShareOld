@@ -150,7 +150,6 @@ const ChatScreen = ({route}) => {
     const setChatData = ()=>{
         console.log(user[0].includes(uid) ? user[1] : user[0]);
     }
-    console.log(user);
     useEffect(()=>{
         onValue(ref(db,'ChatMessage/'+idRoom+'/'),(snapshot)=>{
             var User = typeof(snapshot.val()) == undefined ? [] : snapshot.val() == null ? [] : snapshot.val().User;

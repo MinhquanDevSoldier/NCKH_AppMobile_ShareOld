@@ -11,62 +11,145 @@ import {
     ImageBackground,
     ScrollView
 } from 'react-native'
-import { auth } from '../../firebase/config'
-import { signInWithEmailAndPassword,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signInWithRedirect} from "firebase/auth";
+import NormalAlert from '../../components/modals/NormalAlert'
+import { auth,db } from '../../firebase/config'
+import { signInWithEmailAndPassword,onAuthStateChanged,createUserWithEmailAndPassword,updateProfile} from "firebase/auth";
+import {set,ref} from 'firebase/database'
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import styles from './styles'
 const {width,height} = Dimensions.get('screen');
 
 const LoginScreen = ({navigation}) => {
     //Variables
+    const [message,setMessage] = React.useState('');
     const [email,onChangeEmail] = React.useState("");
     const [password,onChangePassword] = React.useState("");
     const [disabled,setdisabled] = React.useState(true);
-    
+    const [modalVisible,setModalVisible] = React.useState(false);
     //Functions
     onAuthStateChanged(auth, (user) => {
         if (user) {
           navigation.replace('MainTabNavigator')
         } else {
-
+          
         }
     });
+    const CreateAccount = async(email,password,user) => {
+        await createUserWithEmailAndPassword(auth,email, password)
+        .then((userCredential)=>{
+            updateProfile(auth.currentUser, {
+                displayName: user.name, 
+                photoURL: user.photo
+              }).then(() => {
+                var date = new Date().getDate(); //Current Date
+                var month = new Date().getMonth() + 1; //Current Month
+                var year = new Date().getFullYear(); //Current Year
+                set(ref(db, 'users/' + userCredential.user.uid), {
+                    photo:user.photo,
+                    name: user.name,
+                    email: email,
+                    address: '',
+                    phone: '',
+                    createAt: `${date}/${month}/${year}`
+                  });
+              }).catch((error) => {
+                console.log(error.message);
+              });
+        })
+        .catch((error)=>{ console.log(error.message)})
+    }
+    const signIn = async () => {
+        try {
+          GoogleSignin.configure({
+              webClientId:'122606372840-i2oh8gqi8fh8gdr8jlo177go4s2uj5qk.apps.googleusercontent.com',
+              webClientSecret:'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'
+          });
+          await GoogleSignin.hasPlayServices();
+          const {user} = await GoogleSignin.signIn();
+          const email = user.email;
+          const password = '000000';
+          await signInWithEmailAndPassword(auth,email, password)
+          .then(()=>{
+            navigation.replace('MainTabNavigator');
+          })
+          .catch((error)=>{
+              if(error.code == 'auth/user-not-found')
+              {
+                  CreateAccount(email,password,user);
+              }
+          })
 
-    const SignInChatApps = ()=>{
-        signInWithEmailAndPassword(auth,email, password)
+        } catch (error) {
+          if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+            // user cancelled the login flow
+            console.log('user cancelled the login flow');
+          } else if (error.code === statusCodes.IN_PROGRESS) {
+            // operation (e.g. sign in) is in progress already
+            console.log('operation (e.g. sign in) is in progress already');
+          } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+            // play services not available or outdated
+            console.log('play services not available or outdated');
+          } else {
+            // some other error happened
+            console.log({error});
+          }
+        }
+      };
+
+    const SignInChatApps = async()=>{
+        await signInWithEmailAndPassword(auth,email, password)
         .then(()=>{
             navigation.replace('MainTabNavigator')
         })
-        .catch((error)=>{alert(error.message)})
+        .catch((error)=>{
+            if(error.code == 'auth/user-not-found')
+            {
+                setMessage('Tài khoản không tồn tại\nVui lòng kiểm tra lại tài khoản.');
+                setModalVisible(!modalVisible);
+            }
+        })
         
     }
 
-    const signInWithGoogle = ()=>{
-        const provider = new GoogleAuthProvider()
-        signInWithPopup(auth, provider)
-        .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            // The signed-in user info.
-            const user = result.user;
-            console.log(user);
-            // ...
-        }).catch((error) => {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.email;
-            // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
-            // ...
-        });
+    //Error : signInWithPopup is not function
+    // const signInWithGoogle = async ()=>{
+    //     const provider = new GoogleAuthProvider();//Create variables provider
+    //     await signInWithPopup(auth, provider)
+    //     .then((result) => {
+    //         // This gives you a Google Access Token. You can use it to access the Google API.
+    //         const credential = GoogleAuthProvider.credentialFromResult(result);
+    //         const token = credential.accessToken;
+    //         // The signed-in user info.
+    //         const user = result.user;
+    //         console.log(user);
+    //         // ...
+    //     }).catch((error) => {
+    //         // Handle Errors here.
+    //         const errorCode = error.code;
+    //         const errorMessage = error.message;
+    //         // The email of the user's account used.
+    //         const email = error.email;
+    //         // The AuthCredential type that was used.
+    //         const credential = GoogleAuthProvider.credentialFromError(error);
+    //         // ...
+    //     });
         
-    }
+    // }
 
-    const signInGoogleByRedirect = ()=>{
-        const provider = new GoogleAuthProvider();
-        signInWithRedirect(auth, provider);
+    const signInGoogleByRedirect = async()=>{
+        
+        try{
+            GoogleSignin.configure();
+            await GoogleSignin.hasPlayServices();
+            const {idToken} = await GoogleSignin.signIn();
+            console.log({idToken});
+            const provider = new GoogleAuthProvider(idToken);
+            await signInWithRedirect(auth, provider);cdcd
+        }
+        catch(error)
+        {
+            console.log({error});
+        }
     }
 
     const signInWithFacebook = ()=>{
@@ -131,7 +214,10 @@ const LoginScreen = ({navigation}) => {
                             marginBottom:10,
                         }}
                         activeOpacity={0.8}
-                        onPress={()=>{alert("Sign In with Facebook")}}
+                        onPress={()=>{
+                            setMessage('Tính năng đang được cập nhật');
+                            setModalVisible(!modalVisible);
+                        }}
                     >
                         <Image
                             
@@ -159,7 +245,7 @@ const LoginScreen = ({navigation}) => {
                             height:width/8+10,
                         }}
                         activeOpacity={0.8}
-                        onPress={signInGoogleByRedirect}
+                        onPress={signIn}
                     >
                         <Image
                             style={{width:width/10,height:width/10,marginHorizontal:10}}
@@ -173,6 +259,11 @@ const LoginScreen = ({navigation}) => {
                 </View>
             </View>
             </ImageBackground>
+            <NormalAlert
+                content = {message}
+                modalVisible = {modalVisible}
+                setModalVisible = {setModalVisible}
+            />
             </ScrollView>
         </SafeAreaView>
     )

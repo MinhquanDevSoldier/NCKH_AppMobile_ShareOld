@@ -140,7 +140,7 @@ const HomeScreen = ({navigation})=>{
                     <View style={{paddingVertical:60,alignItems:'center',justifyContent:'center'}}>
                         <Text style={{textAlign: 'center'}}>Danh sách rỗng</Text>
                         <Image
-                            style={{width:width/2,height:height/3,borderTopRightRadius:5,borderTopLeftRadius:5}}
+                            style={{width:width/2,height:width/2,borderTopRightRadius:5,borderTopLeftRadius:5}}
                             resizeMode='stretch'
                             source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrsIEnZ-jYZo6lMV0N75P7N0FHeg4FUPQwOw&usqp=CAU'}}
                         />

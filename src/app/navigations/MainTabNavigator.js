@@ -43,7 +43,7 @@ const AddPostButton = (props)=>(
                     borderRadius:100,
                     textAlign: 'center',
                     fontSize: 50,
-                    elevation:10,
+                    elevation:5,
                     color: 'rgb(0,106,255)'
                 }}
             />

@@ -80,7 +80,9 @@ const PostList = ({navigation,route}) =>{
                         style={{
                             textAlign: 'center',
                             fontSize: 80,
-                            color: '#C5C3C3'
+                            color: '#C5C3C3',
+                            //backgroundColor:'#000000',
+                            width: '100%',
                         }}
                     />
                     <Text

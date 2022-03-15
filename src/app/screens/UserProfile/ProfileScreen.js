@@ -16,6 +16,7 @@ import { faCoffee,faCalendarAlt,faMapMarkerAlt,faPhone } from '@fortawesome/free
 import { db,auth } from '../../firebase/config'
 import {signOut} from 'firebase/auth'
 import { ref, onValue} from "firebase/database";
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 const {width,height} = Dimensions.get('screen');
 
 const ProfileScreen = ({navigation}) => {
@@ -49,7 +50,29 @@ const ProfileScreen = ({navigation}) => {
             SetUserInfo(data);
         })
     },[])
+    //function
+    // const getCurrentUser = async () => {
+    //     try {
+    //       const {user} = await GoogleSignin.getCurrentUser();
+    //       console.log(user);
+    //       setUid(user.id.toString());
+    //       SetUserInfo(user);
+    //     } catch (error) {
+    //       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+    //         // user has not signed in yet
+    //       } else {
+    //         console.log(error);
+    //       }
+    //     }
+    // };
 
+    const signOut_Google = async () => {
+        try {
+          await GoogleSignin.signOut();
+        } catch (error) {
+          console.error(error);
+        }
+      };
     return(
         <SafeAreaView>
             <ScrollView>
@@ -82,7 +105,7 @@ const ProfileScreen = ({navigation}) => {
                             <Image
                                 style={styles().Avatar}
                                 resizeMode='cover'
-                                source={{uri:userInfo.Avatar}}
+                                source={{uri:userInfo.photo}}
                             />
                             <TouchableOpacity
                                 onPress={()=>{navigation.navigate('ModifyProfile')}}
@@ -97,13 +120,14 @@ const ProfileScreen = ({navigation}) => {
                                 />
                             </TouchableOpacity> 
                         </View>
-                        <Text style={styles().textHeader}>{`${userInfo.username}`}</Text>
+                        <Text style={styles().textHeader}>{`${userInfo.name}`}</Text>
                         <View style={styles().container}></View>
                         <View style={ styles().body}>
                         <View style={ styles().Bottom }>
                             <TouchableOpacity
-                                onPress={()=>{
-                                    auth.signOut();
+                                onPress={async()=>{
+                                    await auth.signOut();
+                                    await signOut_Google();
                                     navigation.replace('LoginScreen')
                                 }}
                                 style={styles().btnSignOut}
@@ -113,13 +137,13 @@ const ProfileScreen = ({navigation}) => {
                         </View> 
                     <View style={styles().Info}>
                         <Text style={styles().textInfo}>
-                            <FontAwesomeIcon size={18} icon={ faCalendarAlt } />{`  Ngày tham gia : ${userInfo.CreateAt}`}
+                            <FontAwesomeIcon size={18} icon={ faCalendarAlt } />{`  Ngày tham gia : ${userInfo.createAt}`}
                         </Text>
                         <Text style={styles().textInfo}>
-                            <FontAwesomeIcon size={18} icon={ faMapMarkerAlt } />{`  Địa chỉ : ${userInfo.Address}`}
+                            <FontAwesomeIcon size={18} icon={ faMapMarkerAlt } />{`  Địa chỉ : ${userInfo.address}`}
                         </Text>
                         <Text style={styles().textInfo}>
-                            <FontAwesomeIcon size={18} icon={ faPhone } />{`  Số điện thoại : ${userInfo.Phone == '' ?'Chưa cập nhật':userInfo.Phone}`}
+                            <FontAwesomeIcon size={18} icon={ faPhone } />{`  Số điện thoại : ${userInfo.phone == '' ?'Chưa cập nhật':userInfo.phone}`}
                         </Text>
                         </View>
                         <View>

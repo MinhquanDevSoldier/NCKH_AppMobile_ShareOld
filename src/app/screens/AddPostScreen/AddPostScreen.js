@@ -20,17 +20,23 @@ import {Picker} from '@react-native-picker/picker';
 import {db,auth} from '../../firebase/config'
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker'
 import {update,ref,push,child} from 'firebase/database'
+import data from '../../assets/LocalAddress/local.json'
 const {width, height} = Dimensions.get('window')
 
 const AddPostScreen = ({navigation}) => {
     //Variables
+    const Location = data;
+    console.log(Location.length);
     const [modalVisible,setModalVisible] = useState(false);
     const [message,setMessage] = useState('');
-    const [inputDescriptionPhoto,setInputDescriptionPhoto] = useState('');
+    const [inputDescriptionPhoto,setInputDescriptionPhoto] = useState('https://yesoffice.com.vn/wp-content/themes/zw-theme//assets/images/default.jpg');
     const uid = auth.currentUser == null ? '' :auth.currentUser.uid;
     const [ptitle,setPtitle] = useState('');
     const [pcontent,setPcontent] = useState('');
     const [selectedLanguage, setSelectedLanguage] = useState(()=>'Mobile');
+    const [selectedDistrict,setSelectedDistrict] = useState('');
+    const [selectedWard,setSelectedWard] = useState('');
+    const [selectedProvince,setSelectedProvince] = useState('');
     
     //UseEffect
 
@@ -56,8 +62,17 @@ const AddPostScreen = ({navigation}) => {
         {
             setMessage('Bạn ơi chưa có ảnh mô tả kìa')
         }
+        else if(selectedProvince == '')
+        {
+            setMessage('Bạn vui lòng cung cấp ít nhất là tên Tỉnh');
+        }
         else
         {
+            const location = selectedWard == '' ? 
+                                selectedDistrict == '' ? 
+                                    selectedProvince 
+                                    :selectedDistrict+', '+selectedProvince 
+                            :selectedWard+', '+selectedDistrict+', '+selectedProvince
             var date = new Date().getDate(); //Current Date
             var month = new Date().getMonth() + 1; //Current Month
             var year = new Date().getFullYear(); //Current Year
@@ -65,6 +80,7 @@ const AddPostScreen = ({navigation}) => {
             var min = new Date().getMinutes(); //Current Minutes
             var sec = new Date().getSeconds();
             const postData = {
+                Location:location,
                 DescriptionPhoto:inputDescriptionPhoto,
                 typePost:selectedLanguage,
                 Title:ptitle,
@@ -81,7 +97,8 @@ const AddPostScreen = ({navigation}) => {
             setMessage('Bài viết đã được đăng lên hệ thống');
             setPcontent('');
             setPtitle('');
-            
+            setInputDescriptionPhoto('https://yesoffice.com.vn/wp-content/themes/zw-theme//assets/images/default.jpg');
+            setSelectedProvince('Chưa chọn');
         }
         setModalVisible(!modalVisible);
     }
@@ -106,7 +123,7 @@ const AddPostScreen = ({navigation}) => {
             )
         }   
     }
-    const getImageFromCamera= ()=>{
+    const getImageFromCamera= async()=>{
         const options={
             storageOptions: {
                 path: 'images',
@@ -115,7 +132,7 @@ const AddPostScreen = ({navigation}) => {
             includeBase64:true,
         };
 
-        launchCamera(options,response=>{
+        await launchCamera(options,response=>{
             if(response.didCancel)
             {
                 console.log('User cancelled image picker');
@@ -170,10 +187,6 @@ const AddPostScreen = ({navigation}) => {
 
     return(
     <SafeAreaView style={modalStyles().centeredView}>
-        <ScrollView 
-            showsVerticalScrollIndicator={false}
-            //showsHorizontalScroll={false}    
-        >
             {
             uid == ''
             ?
@@ -211,6 +224,9 @@ const AddPostScreen = ({navigation}) => {
             <View style={modalStyles().centeredView}>
                 <View style={modalStyles().modalView}>
                     <Text style={{
+                        position: 'absolute',
+                        top:10,
+                        zIndex:99,
                         backgroundColor:'#333',
                         borderRadius:5,
                         paddingVertical:10,
@@ -221,10 +237,16 @@ const AddPostScreen = ({navigation}) => {
                         color:'#ffff',
                         paddingVertical:10,
                         fontSize:20}}>ĐĂNG BÀI</Text>
+                <ScrollView 
+                    showsVerticalScrollIndicator={false}
+                    //showsHorizontalScroll={false}    
+                    style={{marginTop:70}}
+                >
                     <Picker
                         style={{
                             backgroundColor:'white',
                             width:width-10,
+                            elevation:2
                         }}
                         selectedValue={selectedLanguage}
                         onValueChange={(itemValue, itemIndex) =>
@@ -302,10 +324,87 @@ const AddPostScreen = ({navigation}) => {
                         placeholder="Viết gì đó ..."
                         multiline={true}
                     />
+                    <Text
+                        style={{fontSize:16,paddingBottom:10,fontWeight:'bold'}}
+                    >Địa chỉ liên hệ</Text>
+                    <Picker
+                        style={{
+                            backgroundColor:'white',
+                            width:width-10,
+                            elevation:1
+                        }}
+                        selectedValue={selectedProvince}
+                        onValueChange={(itemValue, itemIndex) =>
+                        setSelectedProvince(itemValue)
+                    }>
+                        <Picker.Item style={{fontSize:14}} label={'Chưa chọn'} value={''}/>
+                        {
+                            Location.map(e=>
+                                <Picker.Item style={{fontSize:14}} label={e.name} value={e.name}/>
+                            )
+                        }
+                    </Picker>
+                    <Picker
+                        style={{
+                            backgroundColor:'white',
+                            width:width-10,
+                            marginTop:5,
+                            elevation:1
+                        }}
+                        selectedValue={selectedDistrict}
+                        onValueChange={(itemValue, itemIndex) =>
+                        setSelectedDistrict(itemValue)
+                    }>
+                        <Picker.Item style={{fontSize:14}} label={'Chưa chọn'} value={''}/>
+                        {
+                            Location.map(e=>
+                                e.name == selectedProvince ?
+                                e.districts.map(District=>
+                                    <Picker.Item style={{fontSize:14}} label={District.name} value={District.name}/>
+                                )
+                                :null
+                            )
+                        }
+                    </Picker>
+                    <Picker
+                        style={{
+                            backgroundColor:'white',
+                            width:width-10,
+                            marginTop:5,
+                            elevation:1
+                        }}
+                        selectedValue={selectedWard}
+                        onValueChange={(itemValue, itemIndex) =>
+                        setSelectedWard(itemValue)
+                    }>
+                        <Picker.Item style={{fontSize:14}} label={'Chưa chọn'} value={''}/>
+                        {
+                            Location.map(e=>
+                                e.name == selectedProvince ?
+                                e.districts.map(District=>
+                                    District.name == selectedDistrict ?
+                                    District.wards.map(Ward=>
+                                        <Picker.Item style={{fontSize:14}} label={Ward.name} value={Ward.name}/>
+                                    )
+                                    :null
+                                )
+                                :null
+                            )
+                        }
+                    </Picker>
+                    <View
+                        style={{height:80}}
+                    >
+
+                    </View>
+                    </ScrollView>
                     <View
                         style={{
-                            flexDirection:'row'
-
+                            
+                            flexDirection:'row',
+                            position:'absolute',
+                            backgroundColor:'white',
+                            bottom: 10,
                         }}
                     >
                         <TouchableOpacity
@@ -327,7 +426,7 @@ const AddPostScreen = ({navigation}) => {
                 />
             </View>
         }
-        </ScrollView>
+        
     </SafeAreaView>
     )
 }
@@ -385,7 +484,7 @@ const modalStyles = (props) => StyleSheet.create({
         borderRadius:5,
         elevation:1,
         width:width - 10,
-        height:height-350,
+        height:height-450,
         paddingHorizontal:10,
         paddingVertical:15,
         textAlignVertical: "top",
