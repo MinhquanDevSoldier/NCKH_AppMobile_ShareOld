@@ -27,12 +27,12 @@ const LoginScreen = ({navigation}) => {
     const [disabled,setdisabled] = React.useState(true);
     const [modalVisible,setModalVisible] = React.useState(false);
     //Functions
+    const uid = auth.currentUser == null ? '' : auth.currentUser.uid;
+    console.log(uid);
     onAuthStateChanged(auth, (user) => {
         if (user) {
-          navigation.replace('MainTabNavigator')
-        } else {
-          
-        }
+          navigation.replace('MainTabNavigator');
+        } 
     });
     const CreateAccount = async(email,password,user) => {
         await createUserWithEmailAndPassword(auth,email, password)
@@ -44,6 +44,9 @@ const LoginScreen = ({navigation}) => {
                 var date = new Date().getDate(); //Current Date
                 var month = new Date().getMonth() + 1; //Current Month
                 var year = new Date().getFullYear(); //Current Year
+                set(ref(db,'SaveList/'+userCredential.user.uid),{
+                    0:''
+                });
                 set(ref(db, 'users/' + userCredential.user.uid), {
                     photo:user.photo,
                     name: user.name,
@@ -59,8 +62,10 @@ const LoginScreen = ({navigation}) => {
         .catch((error)=>{ console.log(error.message)})
     }
     const signIn = async () => {
-        try {
-          GoogleSignin.configure({
+        try 
+        {
+            await GoogleSignin.signOut();
+            GoogleSignin.configure({
               webClientId:'122606372840-i2oh8gqi8fh8gdr8jlo177go4s2uj5qk.apps.googleusercontent.com',
               webClientSecret:'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'
           });
@@ -68,6 +73,7 @@ const LoginScreen = ({navigation}) => {
           const {user} = await GoogleSignin.signIn();
           const email = user.email;
           const password = '000000';
+          console.log(email);
           await signInWithEmailAndPassword(auth,email, password)
           .then(()=>{
             navigation.replace('MainTabNavigator');

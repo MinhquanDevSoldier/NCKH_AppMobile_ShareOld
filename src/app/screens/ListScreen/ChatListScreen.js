@@ -42,10 +42,12 @@ const ChatListScreen = ({navigation}) => {
                         [
                             {
                                 uid:'',
+                                uidOld:props.uid3,
                                 displayName:user.displayName
                             },
                             {
                                 uid:props.uid2,
+                                uidOld:props.uid2,
                                 displayName:props.name
                             }
                         ]
@@ -180,10 +182,13 @@ const ChatListScreen = ({navigation}) => {
                                 RemoveChatRoom({name:chats[data.index].val.Member[0].uid == user.uid 
                                     ? chats[data.index].val.Member[1].displayName
                                     : chats[data.index].val.Member[0].displayName,
-                                uid2:chats[data.index].val.Member[0].uid == user.uid 
-                                ? chats[data.index].val.Member[1].uid
-                                : chats[data.index].val.Member[0].uid,
-                                idRoom:chats[data.index].key})
+                                    uid2:chats[data.index].val.Member[0].uid == user.uid 
+                                    ? chats[data.index].val.Member[1].uid
+                                    : chats[data.index].val.Member[0].uid,
+                                    uid3:chats[data.index].val.Member[0].uid == user.uid 
+                                    ? chats[data.index].val.Member[0].uid
+                                    : chats[data.index].val.Member[1].uid,
+                                    idRoom:chats[data.index].key})
                             }}
                             onPress={()=>OpenChatScreen({
                                 idRoom:chats[data.index].key,
@@ -204,8 +209,8 @@ const ChatListScreen = ({navigation}) => {
                                 <ChatListItem 
                                     uid={
                                         chats[data.index].val.Member[0].uid == user.uid 
-                                        ? chats[data.index].val.Member[1].uid
-                                        : chats[data.index].val.Member[0].uid
+                                        ? chats[data.index].val.Member[1].uidOld
+                                        : chats[data.index].val.Member[0].uidOld
                                     } 
                                     key={chats[data.index].key} 
                                     name={
@@ -219,8 +224,8 @@ const ChatListScreen = ({navigation}) => {
                                 <ChatListItem 
                                     uid={
                                         chats[data.index].val.Member[0].uid == user.uid 
-                                        ? chats[data.index].val.Member[1].uid
-                                        : chats[data.index].val.Member[0].uid
+                                        ? chats[data.index].val.Member[1].uidOld
+                                        : chats[data.index].val.Member[0].uidOld
                                     } 
                                     key={chats[data.index].key} 
                                     name={

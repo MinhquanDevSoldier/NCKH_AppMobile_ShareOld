@@ -68,6 +68,7 @@ const ProfileScreen = ({navigation}) => {
 
     const signOut_Google = async () => {
         try {
+          await auth.signOut();
           await GoogleSignin.signOut();
         } catch (error) {
           console.error(error);
@@ -89,8 +90,9 @@ const ProfileScreen = ({navigation}) => {
                         </Text>
                         <View style={ styles().Bottom }>
                             <TouchableOpacity
-                                onPress={()=>{
-                                    auth.signOut();
+                                onPress={async()=>{
+                                    await signOut_Google();
+                                    await auth.signOut();
                                     navigation.navigate('LoginScreen')
                                 }}
                                 style={styles().btnSignOut}
@@ -126,8 +128,8 @@ const ProfileScreen = ({navigation}) => {
                         <View style={ styles().Bottom }>
                             <TouchableOpacity
                                 onPress={async()=>{
-                                    await auth.signOut();
                                     await signOut_Google();
+                                    await auth.signOut();
                                     navigation.replace('LoginScreen')
                                 }}
                                 style={styles().btnSignOut}
@@ -145,57 +147,15 @@ const ProfileScreen = ({navigation}) => {
                         <Text style={styles().textInfo}>
                             <FontAwesomeIcon size={18} icon={ faPhone } />{`  Số điện thoại : ${userInfo.phone == '' ?'Chưa cập nhật':userInfo.phone}`}
                         </Text>
-                        </View>
-                        <View>
-                            <Text style={{
-                                fontWeight:'700',
-                                paddingVertical:10,
-                                fontSize:16
-                            }}>Danh sách bài đăng đã lưu ( tối đa 15 )</Text>
-                        </View>
-                        <View  style={{paddingBottom:150}}>
-                        {
-                            saveList.length == 0 ?
-                            <View style={{paddingVertical:60,alignItems:'center',justifyContent:'center'}}>
-                                <Text style={{textAlign: 'center'}}>Danh sách rỗng</Text>
-                                <Image
-                                    style={{width:width/2,height:width/2,borderTopRightRadius:5,borderTopLeftRadius:5}}
-                                    resizeMode='stretch'
-                                    source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrsIEnZ-jYZo6lMV0N75P7N0FHeg4FUPQwOw&usqp=CAU'}}
-                                />
-                            </View>
-                            :
-                            <FlatList
-                                style={{}}
-                                data={posts}
-                                renderItem={(data)=>
-                                    saveList.includes(posts[data.index].key)?
-                                    <TouchableOpacity
-                                        style={styles().postItem}
-                                        onPress={()=>{
-                                            navigation.navigate('PostDetailScreen',
-                                            {
-                                                keyPost:posts[data.index].key,
-                                                // Type:route.params.val,
-                                                userPostID:posts[data.index].val.CreateBy
-                                            })
-                                        }}
-                                    >
-                                        <Image
-                                            style={{width:60,height:60,borderRadius:5,backgroundColor:'white'}}
-                                            source={{uri:posts[data.index].val.DescriptionPhoto}}
-                                        />
-                                        <View style={{}}>
-                                            <Text style={styles(width, height).textTitle} >{posts[data.index].val.Title}</Text>
-                                            <Text style={styles().textTime} >{posts[data.index].val.CreateAtDate}</Text>
-                                        </View> 
-                                    </TouchableOpacity> 
-                                    :null
-                                }
-                                showsVerticalScrollIndicator={false}
-                            />
-                        }
-                        </View>
+                        <TouchableOpacity
+                                onPress={async()=>{
+                                    navigation.navigate('SaveListScreen');
+                                }}
+                                style={styles().btnSaveList}
+                            >
+                                <Text style={ styles().textButton}>Bài viết đã lưu</Text>
+                            </TouchableOpacity>
+                        </View> 
                         </View>
                     </View>
                 }
@@ -260,6 +220,13 @@ const styles =(width, height)=> StyleSheet.create({
     },
     btnSignOut:{
         backgroundColor:'#2596be',
+        width:'100%',
+        paddingHorizontal:50,
+        paddingVertical:10,
+        borderRadius:8,
+    },
+    btnSaveList:{
+        backgroundColor:'green',
         width:'100%',
         paddingHorizontal:50,
         paddingVertical:10,

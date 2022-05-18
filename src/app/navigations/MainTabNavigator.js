@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import Home from '../screens/HomeScreen/HomeScreen';
 import Profile from '../screens/UserProfile/ProfileScreen';
 import Chats from '../screens/ListScreen/ChatListScreen';
-import Notify from '../screens/ManagePostScreen/NotificationList';
+import ManagePostScreen from '../screens/ManagePostScreen/ManagePostScreen';
 import AddPostModal from '../components/AddPostModal';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
@@ -99,8 +99,8 @@ const Main = ({navigation})=>{
                     }} 
                 />
                 <Tab.Screen 
-                    name="Notification"
-                    component={Notify}
+                    name="ManagePost"
+                    component={ManagePostScreen}
                     options={{
                         tabBarLabel:'HOME',
                         tabBarIcon: ({focused})=>

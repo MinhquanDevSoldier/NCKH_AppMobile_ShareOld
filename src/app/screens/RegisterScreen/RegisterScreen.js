@@ -98,11 +98,15 @@ const RegisterScreen = ({navigation})=>{
         }
         else if(inputName == '')
         {
-            setMessage('Hãy cho chúng tội và mọi người biết nên gọi bạn là gì ? ( Chưa nhập tên )');
+            setMessage('Hãy cho chúng tôi và mọi người biết nên gọi bạn là gì ? ( Chưa nhập tên )');
         }
         else if(inputAddress == '')
         {
             setMessage('Nhà bạn ở đâu thế ? ( Chưa địa chỉ )');
+        }
+        else if(inputPhone == '')
+        {
+            setMessage('Chưa nhập số điện thoại');
         }
         else {
             setMessage('Đăng ký thành công\n Đăng nhập ngay');
@@ -156,7 +160,7 @@ const RegisterScreen = ({navigation})=>{
                 <TextInput
                     style={styles().TextInput}
                     onChangeText={onChangeEmail}
-                    placeholder="Nhập email của bạn"
+                    placeholder="Tên đăng nhập (Số điện thoại)"
                 />
                 <TextInput
                     style={styles().TextInput}
@@ -177,7 +181,7 @@ const RegisterScreen = ({navigation})=>{
                 <TextInput
                     style={styles().TextInput}
                     onChangeText = {onChangePhone}
-                    placeholder="Số điện thoại để gọi cho bạn ? ( có thể bỏ qua )"
+                    placeholder="Nhập email giúp lấy lại mật khẩu nếu quên"
                 />
                 <TouchableOpacity 
                     onPress={

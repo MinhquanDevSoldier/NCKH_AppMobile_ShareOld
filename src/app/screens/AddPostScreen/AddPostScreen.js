@@ -26,7 +26,6 @@ const {width, height} = Dimensions.get('window')
 const AddPostScreen = ({navigation}) => {
     //Variables
     const Location = data;
-    console.log(Location.length);
     const [modalVisible,setModalVisible] = useState(false);
     const [message,setMessage] = useState('');
     const [inputDescriptionPhoto,setInputDescriptionPhoto] = useState('https://yesoffice.com.vn/wp-content/themes/zw-theme//assets/images/default.jpg');
@@ -179,7 +178,12 @@ const AddPostScreen = ({navigation}) => {
             {
                 var result = response.assets;
                 const source = 'data:'+result[0].type+';base64,' + result[0].base64;
-                //console.log(source);
+                const imgheight = result[0].height;
+                const imgwidth = result[0].width;
+                if(imgheight != imgwidth)
+                {
+                    
+                }
                 setInputDescriptionPhoto(source);
             }
         });

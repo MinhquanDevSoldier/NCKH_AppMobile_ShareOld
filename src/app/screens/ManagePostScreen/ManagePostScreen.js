@@ -12,6 +12,8 @@ import {
     Image
 } from 'react-native'
 import ChatListItem from '../../components/ChatListItem'
+import RemoveAlert from '../../components/modals/RemoveAlert';
+import NormalAlert from '../../components/modals/NormalAlert';
 import {auth,db} from '../../firebase/config'
 import {onValue,ref,update,orderByChild,push,child,query,equalTo} from 'firebase/database'
 import {Icons} from ''
@@ -22,9 +24,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 const ChatListScreen = ({navigation}) => {
     const uid = auth.currentUser == null ? '' : auth.currentUser.uid;
     const [posts,setPosts] =  useState([])
+    const [postID,setPostID] = useState('');
     const [search,onChangeSearch] = useState("");
-    const [messages,onChangeMessages] = useState("");
+    const [message,setMessage] = useState("");
     const scrollViewRef = useRef();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible2, setModalVisible2] = useState(false);
 
     const addRoom = ()=>{
         var datetime = new Date();
@@ -66,9 +71,9 @@ const ChatListScreen = ({navigation}) => {
     return(
         <SafeAreaView style={styles().ChatListContainer}>
             <View style={styles(width, height).ChatListHeader}>
-                <Text style={styles().TextHeader}>Bài đăng của bạn</Text>
+                <Text style={styles().TextHeader}>QUẢN LÝ BÀI ĐĂNG</Text>
             </View>
-            
+            <ScrollView>
             <View style={{flex:1,flexDirection: 'column',marginTop:0}}>
             {   
                 uid == '' 
@@ -111,6 +116,7 @@ const ChatListScreen = ({navigation}) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         flex:1,
+                        marginTop:200,
                     }}
                 >
                     <Icon
@@ -130,37 +136,114 @@ const ChatListScreen = ({navigation}) => {
                     style={{}}
                     data={posts}
                     renderItem={(data)=>
-                        <TouchableOpacity
-                            style={styles().postItem}
-                            onPress={()=>{
-                                navigation.navigate('PostDetailScreen',
-                                {
-                                    keyPost:posts[data.index].key,
-                                    Type:'personal',
-                                    userPostID:posts[data.index].val.CreateBy
-                                })
-                            }}
-                        >
-                            <Image
-                                style={{width:60,height:60,borderRadius:5,backgroundColor:'white'}}
-                                source={{uri:posts[data.index].val.DescriptionPhoto}}
-                            />
-                            <View>
-                                <Text style={styles(width, height).textTitle} >{posts[data.index].val.Title}</Text>
-                                <Text style={styles().textTime} >{posts[data.index].val.CreateAtDate}</Text>
-                            </View> 
-                        </TouchableOpacity>  
+                        <View style={{
+                            flexDirection:'row'
+                        }}>
+                            <TouchableOpacity
+                                style={styles().postItem}
+                                onPress={()=>{
+                                    navigation.navigate('PostDetailScreen',
+                                    {
+                                        keyPost:posts[data.index].key,
+                                        Type:'personal',
+                                        userPostID:posts[data.index].val.CreateBy
+                                    })
+                                }}
+                            >
+                                <Image
+                                    style={{width:60,height:60,borderRadius:5,backgroundColor:'white'}}
+                                    source={{uri:posts[data.index].val.DescriptionPhoto}}
+                                />
+                                <View>
+                                    <Text style={styles(width, height).textTitle} >{posts[data.index].val.Title}</Text>
+                                    <Text style={styles().textTime} >{posts[data.index].val.CreateAtDate}</Text>
+                                </View> 
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={()=>{
+                                    //setMessage('tính năng đang được cập nhật');
+                                    //setModalVisible2(true);
+                                    //console.log(posts[data.index].key);
+                                    const keyPost = posts[data.index].key;
+                                    navigation.navigate('PostDetailEdit',{keyPost:keyPost});
+                                }}
+                                style={styles().editIcon}
+                            >
+                                <Icon
+                                    name='edit' 
+                                    style={{
+                                        textAlign: 'center',
+                                        fontSize: 30,
+                                        color: '#154360'
+                                    }}
+                                />
+                            </TouchableOpacity> 
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={()=>{
+                                    setPostID(data.item.key);
+                                    setMessage('Bạn có chắc là muốn xóa bài đăng này ?');
+                                    setModalVisible(!modalVisible)
+                                }}
+                                style={styles().removeIcon}
+                            >
+                                <Icon
+                                    name='trash' 
+                                    style={{
+                                        textAlign: 'center',
+                                        fontSize: 30,
+                                        color: '#E74C3C'
+                                    }}
+                                />
+                            </TouchableOpacity> 
+                        </View>
                     }
                     showsVerticalScrollIndicator={false}
                 />
+                
             }
             </View>
+            <NormalAlert
+                modalVisible={modalVisible2}
+                setModalVisible={setModalVisible2}
+                content = {message}
+            />
+            <RemoveAlert
+                modalVisible={modalVisible}
+                setModalVisible={setModalVisible}
+                content = {message}
+                postID = {postID}
+            />
+            </ScrollView>
         </SafeAreaView>
     );
 }
 //App Color : '#2596be'
 const styles =(width,height)=> StyleSheet.create({
     //Item
+    removeIcon:{
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor:'#D6DBDF',
+        marginVertical:5,
+        marginRight:10,
+        borderTopRightRadius:10,
+        borderBottomRightRadius:10,
+        padding:5,
+        elevation:2,
+    },
+    editIcon:{
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor:'#D6DBDF',
+        marginVertical:5,
+        //borderRadius:10,
+        padding:5,
+        elevation:2,
+    },
     textTitle:{
         fontWeight:'500',
         fontSize:16,
@@ -173,15 +256,17 @@ const styles =(width,height)=> StyleSheet.create({
         fontWeight:'300',
         fontSize:14,
         bottom:0,
-        right:0,
+        left:10,
     },
     postItem:{
+        flex:6,
         position:'relative',
         flexDirection:'row',
         backgroundColor:'#D6DBDF',
         marginVertical:5,
-        marginHorizontal:10,
-        borderRadius:10,
+        marginLeft:10,
+        borderTopLeftRadius:10,
+        borderBottomLeftRadius:10,
         padding:5,
         elevation:2,
     },

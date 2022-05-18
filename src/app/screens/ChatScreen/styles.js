@@ -45,7 +45,7 @@ export default (width,height) => StyleSheet.create({
         borderRadius:25,
         fontSize:16,
         paddingLeft:15,
-        height:38,
+        height:45,
     },
     ButtonSend:{
         width: width*1/6,

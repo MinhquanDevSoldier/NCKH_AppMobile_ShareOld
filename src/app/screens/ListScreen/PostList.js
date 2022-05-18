@@ -109,7 +109,7 @@ const PostList = ({navigation,route}) =>{
                             }}
                         >
                             <Image
-                                style={{width:60,height:60,borderRadius:5,backgroundColor:'white'}}
+                                style={{width:100,height:100,borderRadius:5,backgroundColor:'white',borderWidth:0.1}}
                                 resizeMode='cover'
                                 source={{uri:Posts[data.index].val.DescriptionPhoto}}
                             />
@@ -131,7 +131,7 @@ const styles =(width, height)=> StyleSheet.create({
     textTitle:{
         fontWeight:'500',
         fontSize:16,
-        width:width-100,
+        width:width-130,
         paddingHorizontal:10,
         color:'black'
     },
@@ -140,24 +140,24 @@ const styles =(width, height)=> StyleSheet.create({
         fontWeight:'300',
         fontSize:14,
         bottom:0,
-        right:0,
+        right:10,
     },
     InputSearch:{
-        backgroundColor:'#ececec',
+        backgroundColor:'white',
         width:width-20,
-        borderRadius:25,
+        borderRadius:5,
         padding:5,
         paddingStart:25,
     },
     postItem:{
         position:'relative',
         flexDirection:'row',
-        backgroundColor:'#D6DBDF',
+        backgroundColor:'white',
         marginVertical:5,
         marginHorizontal:10,
-        borderRadius:10,
+        borderRadius:5,
         padding:5,
-        elevation:2,
+        elevation:5,
     }
 })
 export default PostList;

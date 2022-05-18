@@ -63,7 +63,7 @@ const PostDetail = ({navigation,route})=>{
     useEffect(()=>{
         onValue(ref(db,'SaveList/'+uid),(snapshot)=>{
             if(uid != '')
-                snapshot.val() == null ? setSaveList([]) : setSaveList(snapshot.val());
+            { snapshot.val() == null ? setSaveList([]) : setSaveList(snapshot.val());}
         })
     },[])
     //Main
@@ -118,12 +118,13 @@ const PostDetail = ({navigation,route})=>{
                                     name='heart' 
                                     style={{
                                         textAlign: 'center',
-                                        fontSize: 30,
+                                        fontSize: 40,
+                                        marginRight:0,
                                         color: saveList.includes(keyPost) ? '#E74C3C':'#154360',
                                     }}
                                 />
                             </TouchableOpacity> 
-                            <TouchableOpacity
+                            {/* <TouchableOpacity
                                 onPress={()=>{
                                     if(uid == '')
                                     {
@@ -150,7 +151,7 @@ const PostDetail = ({navigation,route})=>{
                                         color: '#154360'
                                     }}
                                 />
-                            </TouchableOpacity> 
+                            </TouchableOpacity>  */}
                         </View>
                     </View>
                 <ScrollView
@@ -209,8 +210,9 @@ const PostDetail = ({navigation,route})=>{
                         <Icon
                             name='map-marker-alt' 
                             style={{
-                                paddingRight:10,
-                                textAlign: 'center',
+                                paddingLeft:5,
+                                paddingRight:15,
+                                textAlign: 'justify',
                                 fontSize: 20,
                                 color: '#154360'
                             }}    
@@ -224,12 +226,12 @@ const PostDetail = ({navigation,route})=>{
                             name='exclamation-triangle' 
                             style={{
                                 paddingRight:10,
-                                textAlign: 'center',
+                                textAlign: 'justify',
                                 fontSize: 20,
-                                color: '#154360'
+                                color: '#154360',
                             }}    
                         />
-                        <Text style={styles().textContent} >
+                        <Text style={[styles().textContent,styles().textNote]} >
                             {notes}
                         </Text>
                     </View>
@@ -237,11 +239,17 @@ const PostDetail = ({navigation,route})=>{
                     <View style={styles().bottomView} >
                         <TouchableOpacity
                             onPress={()=>{
+                                console.log(userPost.phone);
                                 if (uid == '')
                                 {
                                     if(userPost.phone == "")
                                     {
                                         setMessage('Người dùng này chưa cập nhật số điện thoại')
+                                        setModalVisible(!modalVisible)
+                                    }
+                                    else
+                                    {
+                                        setMessage('Vì lí do bảo mật xin hãy đăng nhập trước khi lấy số người đăng bài')
                                         setModalVisible(!modalVisible)
                                     }
                                 }

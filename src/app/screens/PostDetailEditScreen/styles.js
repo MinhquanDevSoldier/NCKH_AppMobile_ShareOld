@@ -11,8 +11,8 @@ export default (sizeContent)=> StyleSheet.create({
         marginVertical:4,
         borderRadius:5,
         elevation:2,
-        paddingHorizontal:10,
-        paddingBottom:sizeContent < 100 ? 50 : 10,
+        paddingHorizontal:5,
+        paddingBottom:10,
         paddingTop:10,
         //position:'relative',
     },
@@ -20,7 +20,7 @@ export default (sizeContent)=> StyleSheet.create({
         flexDirection:'row',
         backgroundColor:'rgba(255,255,255,0)',
         elevation:0, 
-        width:width-30,
+        
     },
     contentBox2:{
         flexDirection:'row',
@@ -38,7 +38,7 @@ export default (sizeContent)=> StyleSheet.create({
     textTitle: {
         color:'black',
         fontWeight:'800',
-        fontSize:20,
+        fontSize:16,
     },
     textContent:{
         color:'black',

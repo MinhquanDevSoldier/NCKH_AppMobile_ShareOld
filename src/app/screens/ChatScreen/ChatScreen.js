@@ -35,8 +35,10 @@ const ChatScreen = ({route}) => {
     const [idRoom,setIDRoom] = useState(route.params.idRoom);
     const uid2 = route.params.uid2;
     const user2 = route.params.name;
-
+    
     const sendMessage = ()=>{
+        console.log(idRoom);
+        
         if(idRoom == null)
         {
             var date = new Date().getDate(); //Current Date
@@ -60,10 +62,12 @@ const ChatScreen = ({route}) => {
                 Member:[
                         {
                             uid:uid,
+                            uidOld:uid,
                             displayName:auth.currentUser.displayName
                         },
                         {
                             uid:uid2,
+                            uidOld:uid2,
                             displayName:user2
                         }
                     ]
@@ -118,10 +122,12 @@ const ChatScreen = ({route}) => {
                 Member:[
                     {
                         uid:uid,
+                        uidOld:uid,
                         displayName:auth.currentUser.displayName
                     },
                     {
                         uid:user.length == 0 ? '' : user[0].includes(uid) ? user[1] : user[0],
+                        uidOld:user.length == 0 ? '' : user[0].includes(uid) ? user[1] : user[0],
                         displayName:user2
                     }
                 ]
